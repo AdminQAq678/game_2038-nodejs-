@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+<meta content="width=400px, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+	<title>2048网页版</title>
+</head>
+<body onkeydown="keyListener(event)" background="theimg.jpg">
+	<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+	<script>
+	var score=0;
+	var caninit=false;
+	var myjson=null;
+	var myrank=null;
+	var canplay=true;
+		var num=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+		window.onload=()=>{
+			$(document).ready(()=>{
+			init();
+			getmaxscore();
+			getRank();
+			$("game>div").each((idnex,element)=>{
+				$(this).css("margin","10px");
+			})
+		})
+		}
+		function init(){
+			var newone=null;
+			var mydivs=$(".game div");
+			var flag=false;
+			var cnt=0,m=3;
+
+			while(m>=0){
+				var  n=3;
+				while(n>=0){
+					if(num[m][n]==0) cnt++;
+					n--;
+				}
+				m--;
+			}
+			console.log("可移动",cnt)
+			
+			var posi=parseInt(Math.random()*cnt);
+			console.log(posi)
+			var tem=-1;
+			
+
+			for (var i=0;i<4;i++){
+				for (var j=0;j<4;j++){
+					
+
+					if(num[i][j]==0){
+						tem++;
+					if(tem==posi){
+							num[i][j]=parseInt(Math.random()*10)>5?4:2;
+							newone=$(mydivs[j*4+i])
+							flag=true;
+							break;
+						}
+						
+					}
+				}
+				if(flag) break;
+			}
+			
+			for (var i=0,j=0;i<mydivs.length;i++){
+				if(i%4==0&&i!=0) {
+					++j;
+				}
+				$(mydivs[i]).text(num[i%4][j]==0?"":num[i%4][j])
+				.css("text-align","center").css("font-size","60px")
+				var theval=parseInt($(mydivs[i]).text());
+				var my=null;
+				if(isNaN(theval)) {
+					my="#FFFACD";
+					console.log("asdsd")
+				}else{
+					theval*=10;
+					my="rgb("+`${theval}`+",123,"+`${theval*10}`;
+				
+				}
+				
+				$(mydivs[i]).css("background-color",my);
+			}
+			if(newone!=null)
+			newone.css("background-color","yellow");
+
+			$("#score").html("<p style='font-size:30px' >你的得分为<br>"+score+"分</P>").css("background-color","#bbb").css("box-shadow","2px 2px 5px")
+
+			
+		}
+		function move(direction){
+				caninit=false;
+				if((direction=="a"||direction=="d")){
+						if(direction=="a"){
+							for (var i=0;i<=3;i++){
+								for (var j=0;j<=3;j++){
+									if(num[i][j]!=0){
+										var tem=j+1;
+										while(tem<4){
+											if(num[i][j]==num[i][tem]){
+												num[i][j]*=2;
+												score+=num[i][j];
+												caninit=true;//可以新增
+												num[i][tem]=0;
+												break;
+											}
+											else{
+												if(num[i][tem]!=0)
+													break;
+											}
+											tem++;
+										}
+									}
+								}
+								for (var j=0;j<=3;j++){
+										var tem=j;
+										if(num[i][tem]==0){
+											var t=tem+1;
+											while(t<4){
+												if(num[i][t]!=0){
+													num[i][tem]=num[i][t];
+													num[i][t]=0;
+													caninit=true;
+													break;
+												}
+												t++;
+											}
+											
+										}
+							
+							}
+							
+						}
+				}
+				if(direction=="d"){
+							for (var i=0;i<=3;i++){
+								for (var j=3;j>=0;j--){
+									if(num[i][j]!=0){
+										var tem=j-1;
+										while(tem>=0){
+											console.log("111")
+											if(num[i][j]==num[i][tem]){
+												num[i][j]*=2;
+												score+=num[i][j];
+												num[i][tem]=0;
+												caninit=true;
+												break;
+											}else{
+												if(num[i][tem]!=0)
+													break;
+											}
+											tem--;
+										}
+									}
+								}
+								for (var j=3;j>=0;j--){
+										var tem=j;
+										if(num[i][tem]==0){
+											var t=tem-1;
+											while(t>=0){
+												if(num[i][t]!=0){
+													num[i][tem]=num[i][t];
+													num[i][t]=0;
+													caninit=true;
+													break;
+												}
+												t--;
+											}
+											
+										}
+							
+							}
+							
+						}
+				}
+			}
+								if((direction=="w"||direction=="s")){
+											if(direction=="w"){
+												for (var j=0;j<=3;j++){
+													for (var i=0;i<=3;i++){
+														if(num[i][j]!=0){
+															var tem=i+1;
+															while(tem<4){
+																if(num[i][j]==num[tem][j]){
+																	num[i][j]*=2;
+																	score+=num[i][j];
+																	num[tem][j]=0;
+																	caninit=true;
+																	break;
+																}else{
+																	if(num[tem][j]!=0)
+																		break;
+																}
+																tem++;
+															}
+														}
+													}
+													for (var i=0;i<=3;i++){
+															var tem=i;
+															if(num[tem][j]==0){
+																var t=tem+1;
+																while(t<4){
+																	if(num[t][j]!=0){
+																		num[tem][j]=num[t][j];
+																		num[t][j]=0;
+																		caninit=true;
+																		break;
+																	}
+																	t++;
+																}
+																
+															}
+												
+												}
+												
+											}
+									}
+									if(direction=="s"){
+												for (var j=0;j<=3;j++){
+													for (var i=3;i>=0;i--){
+														if(num[i][j]!=0){
+															var tem=i-1;
+															while(tem>=0){
+																if(num[i][j]==num[tem][j]){
+																	num[i][j]*=2;
+																	score+=num[i][j];
+																	num[tem][j]=0;
+																	caninit=true;
+																	break;
+																}else{
+																	if(num[tem][j]!=0)
+																		break;
+																}
+																tem--;
+															}
+														}
+													}
+													for (var i=3;i>=0;i--){
+															var tem=i;
+															if(num[tem][j]==0){
+																var t=tem-1;
+																while(t>=0){
+																	if(num[t][j]!=0){
+																		num[tem][j]=num[t][j];
+																		num[t][j]=0;
+																		caninit=true;
+																		break;
+																	}
+																	t--;
+																}
+																
+															}
+												
+												}
+												
+											}
+									}
+
+								}
+					
+				if(caninit)
+					init();
+				else{
+					var over=true;
+					var cnt=0;
+					for (var i=0;i<4;i++){
+						for (var j=0;j<4;j++){
+							if((num[i][j]==num[i][j+1]&&j+1<4)||(i+1<4&&num[i][j]==num[i+1][j])) {
+								over=false;
+								break;
+							}
+							if(num[i][j]==0){
+								cnt++;
+							}
+						}
+						if(!over) break;
+					}
+					if(cnt==0) {
+						if(over==true){
+							console.log("canplay",canplay)
+								if(canplay==true){
+								var username=window.prompt("游戏结束！请输入您的用户名");
+								while(username.length>5||username.length==0){
+									username=window.prompt("请输入长度大于0小于6位数的用户名");
+								}
+								canplay=false;
+								var tem={name:username,data:score};
+
+								$.get("/maxscore",{name:username,data:score});
+								getRank();
+							}else{
+								alert("游戏已经结束！请重新开始游戏")
+							}
+						}
+					}
+				}
+			}
+
+
+		function keyListener(event){
+			console.log(event.key)
+			move(event.key);
+			console.log(score);
+		}
+		function restart(){
+			for (var i=0;i<4;i++)
+				for (var j=0;j<4;j++){
+					num[i][j]=0;
+					
+				}
+				init();
+				score=0;
+		}
+			var start_X=0,start_Y=0,end_X=0,end_Y=0;
+			function touchbegin(e){
+				start_X=e.changedTouches[0].screenX;
+				start_Y=e.changedTouches[0].screenY;
+			console.log("触摸开始x坐标",e.changedTouches[0].screenX);
+			console.log("触摸开始Y坐标",e.changedTouches[0].screenY);
+
+			//console.log("y坐标",e.screenY);
+		}
+		function touchmove(e){
+			console.log("触摸X坐标",e.changedTouches[0].screenX);
+			console.log("触摸Y坐标",e.changedTouches[0].screenY);
+			end_X=e.changedTouches[0].screenX;
+			end_Y=e.changedTouches[0].screenY;
+			//console.log("y坐标",e.screenY);
+		}
+		function touchend(e){
+			console.log("触摸结束X坐标",e.changedTouches[0].screenX);
+			console.log("触摸结束Y坐标",e.changedTouches[0].screenY);
+			end_X=e.changedTouches[0].screenX;
+			end_Y=e.changedTouches[0].screenY;
+			
+			var x=end_X-start_X>=0?end_X-start_X:start_X-end_X;
+			var y=end_Y-start_Y>=0?end_Y-start_Y:start_Y-end_Y;
+
+
+
+			if(x>y){//水平移动
+				if(end_X-start_X>0) move("d");
+				else if(end_X-start_X<0){
+						move("a")
+				}
+				console.log("水平滑动")
+			}
+			else if(x<=y){//水平移动
+				if(end_Y-start_Y>0) move("s");
+				else if(end_Y-start_Y<0){
+						move("w")
+
+				}
+				console.log("垂直滑动")
+			}
+			
+			console.log("滑动的x长度",x,"滑动的y长度",y);
+			start_X=0,start_Y=0,end_X=0,end_Y=0;
+		}
+
+		function getmaxscore(){
+			$.get("/getmaxscore",(data)=>{
+				console.log("获取到服务端的最高分为:"+data)
+				$("#maxscore").html("<p style='font-size:30px;color:red;' >最高分为<br>"+data+"分</P>").css("background-color","#bbb").css("box-shadow","2px 2px 5px")
+
+			})
+		}
+		var isrankhidden=true;
+		function rankshow(){
+			
+			
+			if(isrankhidden){
+				$("#truerank").slideDown(2000);
+				isrankhidden=false;
+				$("#rank a").text("收起排行榜");
+			}
+			else{
+				
+				$("#truerank").slideUp(2000);
+				isrankhidden=true;
+				$("#rank a").text("查看排行榜");
+			}
+			
+		}
+		function getRank(){
+			var content="<p style='text-align:center'>Top</p><ol>";
+			$.get("/getRank",(data)=>{
+					if(data.toString()){
+						var tem=data;
+					myjson=JSON.parse(tem)
+					console.log("myjson",myjson)
+					console.log("content",content)
+							for (var i=0;i<=myjson.length;i++){//遍历json对象
+								for (var key in myjson[i]){
+								content=content+"<li>"+key+"   "+myjson[i][key]+"分</li>";
+							}
+							
+						}
+					content+="</ol>";
+					
+				}
+			console.log("content",content)
+				$("#truerank").html(content)
+			})
+
+			
+		}
+					
+		
+	</script>
+	<style type="text/css">
+	.game{
+		width:400px;
+		height: 400px;
+		border:2px lightgray solid;
+		margin: 50px auto;
+		position: relative;
+		box-shadow: 2px 2px 6px;
+	}
+	.game div{
+		position: absolute;
+		width: 100px;
+		height: 100px;
+		border:2px gray solid;
+
+	}
+	.div11{
+		left: 0px;
+		top: 0px;
+	}
+	.div21{
+		left: 0px;
+		top: 100px;
+	}
+
+.div31{
+		left: 0px;
+		top: 200px;
+	}
+
+.div41{
+		left: 0px;
+		top: 300px;
+	}
+
+
+	.div12{
+		left: 100px;
+		top: 0px;
+	}
+
+	.div22{
+		left: 100px;
+		top: 100px;
+	}
+	.div32{
+
+		left: 100px;
+		top: 200px;
+	}
+	.div42{
+	
+		left: 100px;
+		top: 300px;
+	}
+
+
+	.div13{
+		left: 200px;
+		top: 0px;
+	}
+	.div23{
+		left: 200px;
+		top: 100px;
+	}
+	.div33{
+		left: 200px;
+		top: 200px;
+	}
+	.div43{
+		left: 200px;
+		top: 300px;
+	}
+	.div14{
+		left: 300px;
+		top: 0px;
+	}
+	.div24{
+		left: 300px;
+		top: 100px;
+	}
+	.div34{
+		left: 300px;
+		top: 200px;
+	}
+	.div44{
+
+		left: 300px;
+		top: 300px;
+	}
+	#restart{
+
+		position: absolute;
+		top: 120px;
+		left: 480px;
+		width: 100px;
+		height: 100px;
+		border-radius: 100px 100px;
+
+	}
+	
+	#score{
+		width: 200px;
+		height: 120px;
+		position: absolute;
+		top:420px;
+		left: 3px;
+	}
+
+	#maxscore{
+		width: 200px;
+		height: 120px;
+		position: absolute;
+		background-color: gray;
+		top:420px;
+		left: 207px;
+	}
+	.dir {
+		position: relative;
+		left: 30px;
+		top:-250px;
+/*		border:1px solid red;*/
+background-color: #E8E8E8;
+		width: 200px;
+		height: 200px;
+		padding-left: 20px;
+	}
+	.dir>input{
+		width: 50px;
+		height: 50px;
+		margin-left: 10px;
+	}
+	.dir>input:nth-child(2){
+		margin:10px ;
+		position: relative;
+		left: 65px;
+		
+	}
+	.pc{
+		position: relative;
+		left: 470px;
+		top: -220px;
+		background-color: yellow;
+		width: 400px;
+		height:400px;
+	}
+	.pc input{
+		width: 100px;
+		height: 100px;
+		margin-left: 25px;
+		font-size: 50px;
+
+	}
+	.pc>input:nth-child(2){
+		margin:10px ;
+		position: relative;
+		left: 147px;
+		
+	}
+	a{
+		position: absolute;
+		top:-30px;
+		left: 30px;
+	}
+	#rank *{
+		position: relative;
+		left: 300px;
+		top:-480px;
+		width: 200px;
+		height: 300px;
+		overflow: auto;
+	}
+	#truerank{
+		position: relative;
+		left: 204px;
+		top:-473px;
+		width: 200px;
+		height: 300px;
+		color: white;
+		background-color: rgba(0,0,0,0.7);
+		
+		line-height: 20px;
+		font-size: 20px;
+		overflow: auto;
+	}
+
+	</style>
+	<div class="game" ontouchmove="touchmove(event)" ontouchend="touchend(event)" ontouchstart="touchbegin(event)">
+		<div class="div11"></div>
+		<div class="div21"></div>
+		<div class="div31"></div>
+		<div class="div41"></div>
+
+		<div class="div12"></div>
+		<div class="div22"></div>
+		<div class="div32"></div>
+		<div class="div42"></div>
+
+		<div class="div13"></div>
+		<div class="div23"></div>
+		<div class="div33"></div>
+		<div class="div43"></div>
+
+		<div class="div14"></div>
+		<div class="div24"></div>
+		<div class="div34"></div>
+		<div class="div44"></div>
+		<input type="button" hidden id="restart"onclick=" restart()" width="200px;"value="重新开始">
+	
+
+
+		<div id="score">
+			
+		</div>
+		<div id="maxscore" style="font-size:20px">
+			
+			
+		</div>
+		<a href="http://www.wocnz.club:8080/2048.html">电脑端游戏</a>
+		
+
+	</div>
+		<div class="dir" hidden width="400px" height="800">
+			<h3 >请通过下面的按键控制</h3>
+				<input type="button" width="200px;" onclick="move('w')"value="W"><br>
+				<input type="button"  width="200px;" onclick="move('a')" value="A">
+				<input type="button" width="200px;" onclick="move('s')" value="S">
+				<input type="button"  width="200px;" onclick="move('d')" value="D">
+		</div>
+		<div class="pc" hidden width="400px" height="800">
+			<h3 >移动端可选</h3>
+				<input type="button" width="200px;" onclick="move('w')"value="W"><br>
+				<input type="button"  width="200px;" onclick="move('a')" value="A">
+				<input type="button" width="200px;" onclick="move('s')" value="S">
+				<input type="button"  width="200px;" onclick="move('d')" value="D">
+		</div>
+		<div id="rank"  style="color:blue;"><a href="#" onclick="rankshow()">查看排行榜</a></div>
+		<div id="truerank" hidden>Top 20</div>
+		
+
+</body>
+</html>
